@@ -93,22 +93,30 @@ enum AuthorizationStatus {
 }
 
 fn authorize(
+    db: &Database,
     employee_name: &str,
     location: ProtectedLocation,
 ) -> Result<AuthorizationStatus, String> {
-    // put your code here
+    let employee = db.find_employee(employee_name)?;
+    let keycard = db.get_keycard(&employee)?;
+    match keycard.access_level {
+        level if level >= location.required_access_level() => Ok(AuthorizationStatus::Allow),
+        _ => Ok(AuthorizationStatus::Deny),
+    }
 }
 
 fn main() {
+    // initializing outside so it makes sense
+    let db = Database::connect().unwrap();
     // Anita is trying to access the Warehouse, which requires access level 500.
     // Her keycard has access level 1000, which should be allowed.
-    let anita_authorized = authorize("Anita", ProtectedLocation::Warehouse);
+    let anita_authorized = authorize(&db, "Anita", ProtectedLocation::Warehouse);
     // Brody is trying to access the Office, which requires access level 800.
     // His keycard has access level 500, which should be denied.
-    let brody_authorized = authorize("Brody", ProtectedLocation::Office);
+    let brody_authorized = authorize(&db, "Brody", ProtectedLocation::Office);
     // Catherine is trying to access the Warehouse, which requires access level 500.
     // She doesn't have a keycard, so this should be an error.
-    let catherine_authorized = authorize("Catherine", ProtectedLocation::Warehouse);
+    let catherine_authorized = authorize(&db, "Catherine", ProtectedLocation::Warehouse);
 
     println!("{anita_authorized:?}");
     println!("{brody_authorized:?}");
