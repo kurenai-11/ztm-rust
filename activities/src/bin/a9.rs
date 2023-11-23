@@ -9,4 +9,19 @@
 // * Destructure the return value into two variables
 // * Use an if..else if..else block to determine what to print
 
-fn main() {}
+type Coordinates = (f64, f64);
+
+fn return_tuple() -> Coordinates {
+    return (11.1, 22.3);
+}
+
+fn main() {
+    let (_, y) = return_tuple();
+    if y > 5.0 {
+        println!("y>5")
+    } else if y == 5.0 {
+        println!("y==5")
+    } else {
+        println!("y<5")
+    }
+}

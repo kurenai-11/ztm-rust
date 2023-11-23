@@ -8,4 +8,10 @@
 // * Use a function to display your last name
 // * Use the println macro to display messages to the terminal
 
-fn main() {}
+fn display_f_name() {
+    println!("hey I am not John");
+}
+
+fn main() {
+    display_f_name();
+}
