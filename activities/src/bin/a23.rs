@@ -13,20 +13,20 @@ fn part_1() -> bool {
     // has an access level. The "admin" user does have
     // an access level.
     // Note: Use is_some or is_none.
-    maybe_access("admin")
+    maybe_access("admin").is_some()
 }
 
 fn part_2() -> Option<Access> {
     // "Root" is equivalent to Access::Admin, but it is
     // not listed in the maybe_access function.
     // Note: Use or_else and root().
-    maybe_access("root")
+    maybe_access("root").or(root())
 }
 
 fn part_3() -> Access {
     // "Alice" is not a listed user, so she will be a guest.
     // Note: Use unwrap_or_else.
-    maybe_access("Alice")
+    maybe_access("Alice").unwrap_or(Access::Guest)
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -56,7 +56,7 @@ mod test {
 
     #[test]
     fn check_part_1() {
-        assert_eq!(part_1(), true, "Admins have an access level");
+        assert!(part_1(), "Admins have an access level");
     }
 
     #[test]
