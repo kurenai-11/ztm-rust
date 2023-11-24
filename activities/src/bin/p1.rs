@@ -29,4 +29,80 @@
 // * A vector is the easiest way to store the bills at stage 1, but a
 //   hashmap will be easier to work with at stages 2 and 3.
 
-fn main() {}
+use std::{
+    collections::HashMap,
+    io::{self, Error},
+};
+
+struct Bill {
+    name: String,
+    amount: f64,
+}
+
+enum MainMenuChoice {
+    AddBill,
+    EditBill,
+    DeleteBill,
+    Exit,
+}
+
+fn show_menu(bills: &Vec<Bill>) {
+    println!("Hey hey hello this is a bill app ya.");
+    if bills.is_empty() {
+        println!("Looks like you don't have any bills yet, eh?");
+    } else {
+        println!("Current bills information leh:");
+        for bill in bills {
+            println!("name: {}, amount: {} leh.", bill.name, bill.amount);
+        }
+    }
+    let choices = print_main_choices(!bills.is_empty());
+    let choice = read_user_choice(&choices);
+    if let Ok(choice) = choice {
+        match choice {
+            MainMenuChoice::AddBill => println!("adding bill huh"),
+            MainMenuChoice::Exit => println!("exiting huh"),
+            _ => println!("other huh"),
+        }
+    }
+}
+
+fn print_main_choices(has_bills: bool) -> HashMap<i32, MainMenuChoice> {
+    let mut counter = 1;
+    let mut choices = HashMap::new();
+    println!("{}. Add bill ah.", counter);
+    choices.insert(counter, MainMenuChoice::AddBill);
+    counter += 1;
+    if has_bills {
+        println!("{}. Edit bill uh?", counter);
+        choices.insert(counter, MainMenuChoice::EditBill);
+        counter += 1;
+        println!("{}. Delete bill huh?", counter);
+        choices.insert(counter, MainMenuChoice::DeleteBill);
+        counter += 1;
+    }
+    println!("{}. Exit the program lah.", counter);
+    choices.insert(counter, MainMenuChoice::Exit);
+    choices
+}
+
+fn read_user_choice<T>(choices: &HashMap<i32, T>) -> Result<&T, String> {
+    let mut buf = String::new();
+    let result = io::stdin().read_line(&mut buf);
+    if let Err(e) = result {
+        return Err(format!("{}", e));
+    }
+    let choice = buf.trim().parse::<i32>();
+    match choice {
+        Ok(choice) => match choices.get(&choice) {
+            Some(choice) => Ok(choice),
+            None => Err("couldn't find the choice in the choices list".to_owned()),
+        },
+        Err(e) => Err(format!("{}", e)),
+    }
+}
+
+fn main() {
+    let bills = vec![];
+    show_menu(&bills);
+}
