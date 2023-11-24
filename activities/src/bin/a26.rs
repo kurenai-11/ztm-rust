@@ -8,4 +8,9 @@
 // * (OPTIONAL) Read the documentation section `Formatting and Parsing`
 //   for examples on how to create custom time formats
 
-fn main() {}
+use chrono::prelude::Utc;
+
+fn main() {
+    let cur_time = Utc::now().to_rfc3339();
+    println!("{}", cur_time);
+}
