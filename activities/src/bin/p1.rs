@@ -29,10 +29,7 @@
 // * A vector is the easiest way to store the bills at stage 1, but a
 //   hashmap will be easier to work with at stages 2 and 3.
 
-use std::{
-    collections::HashMap,
-    io::{self, Error},
-};
+use std::{collections::HashMap, io};
 
 struct Bill {
     name: String,
