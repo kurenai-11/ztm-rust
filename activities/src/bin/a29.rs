@@ -35,4 +35,14 @@ impl Priority for Guest {
     }
 }
 
-fn main() {}
+fn print_guest_info<T: Priority>(guest: T) {
+    let priority = guest.get_priority();
+    println!("the guest has {:?} priority", priority)
+}
+
+fn main() {
+    let guest1 = Guest;
+    let guest2 = ImportantGuest;
+    print_guest_info(guest1);
+    print_guest_info(guest2);
+}

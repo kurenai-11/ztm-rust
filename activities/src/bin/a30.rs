@@ -15,7 +15,59 @@
 // * It is not necessary to have data fields or function implementations
 //   for the vehicle bodies/colors
 
-trait Body {}
-trait Color {}
+trait Body: std::fmt::Debug {}
+trait Color: std::fmt::Debug {}
 
-fn main() {}
+#[derive(Debug)]
+struct Truck {}
+impl Body for Truck {}
+
+#[derive(Debug)]
+struct Car {}
+impl Body for Car {}
+
+#[derive(Debug)]
+struct Scooter {}
+impl Body for Scooter {}
+
+#[derive(Debug)]
+struct Red {}
+impl Color for Red {}
+
+#[derive(Debug)]
+struct White {}
+impl Color for White {}
+
+#[derive(Debug)]
+struct Black {}
+impl Color for Black {}
+
+struct Vehicle<T: Body, U: Color> {
+    name: String,
+    body: T,
+    color: U,
+}
+
+impl<T: Body, U: Color> Vehicle<T, U> {
+    fn new(name: &str, body: T, color: U) -> Self {
+        Vehicle {
+            name: name.to_owned(),
+            body,
+            color,
+        }
+    }
+
+    fn print_info(&self) {
+        println!(
+            "this is {:?}, body: {:?}, color: {:?}",
+            self.name, self.body, self.color
+        )
+    }
+}
+
+fn main() {
+    let v1 = Vehicle::new("land rover", Car {}, White {});
+    let v2 = Vehicle::new("jenny", Scooter {}, Red {});
+    v1.print_info();
+    v2.print_info();
+}
