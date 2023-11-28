@@ -19,4 +19,50 @@
 // * Use a function to calculate the total cost
 // * Process at least 3 different materials
 
-fn main() {}
+use std::vec;
+
+trait Material {
+    fn cost(&self) -> f64;
+}
+
+struct Carpet {
+    amount: f64,
+}
+impl Material for Carpet {
+    fn cost(&self) -> f64 {
+        self.amount * 10.0
+    }
+}
+struct Tile {
+    amount: f64,
+}
+impl Material for Tile {
+    fn cost(&self) -> f64 {
+        self.amount * 15.0
+    }
+}
+struct Wood {
+    amount: f64,
+}
+impl Material for Wood {
+    fn cost(&self) -> f64 {
+        self.amount * 20.0
+    }
+}
+
+fn calculate_cost(materials: &[Box<dyn Material>]) -> f64 {
+    materials.iter().map(|m| m.cost()).sum()
+}
+
+fn main() {
+    let material1 = Carpet { amount: 15.0 };
+    let material2 = Tile { amount: 35.0 };
+    let material3 = Wood { amount: 12.0 };
+    let materials: Vec<Box<dyn Material>> = vec![
+        Box::new(material1),
+        Box::new(material2),
+        Box::new(material3),
+    ];
+    let cost = calculate_cost(&materials);
+    println!("cost of the materials is {cost}$");
+}
