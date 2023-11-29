@@ -16,4 +16,60 @@
 // Notes:
 // * Optionally use generics for each state
 
-fn main() {}
+struct Luggage<State> {
+    id: i32,
+    state: State,
+}
+
+impl<State> Luggage<State> {
+    fn transition<NewState>(self, new_state: NewState) -> Luggage<NewState> {
+        Luggage {
+            id: self.id,
+            state: new_state,
+        }
+    }
+}
+
+struct CheckIn;
+impl Luggage<CheckIn> {
+    fn new(id: i32) -> Self {
+        Self { id, state: CheckIn }
+    }
+
+    fn load(self) -> Luggage<OnLoading> {
+        self.transition(OnLoading)
+    }
+}
+struct OnLoading;
+impl Luggage<OnLoading> {
+    fn offload(self) -> Luggage<Offloading> {
+        self.transition(Offloading)
+    }
+}
+struct Offloading;
+impl Luggage<Offloading> {
+    fn prepare(self) -> Luggage<AwaitingPickup> {
+        self.transition(AwaitingPickup)
+    }
+}
+struct AwaitingPickup;
+impl Luggage<AwaitingPickup> {
+    fn pick_up(self) -> Luggage<EndCustody> {
+        self.transition(EndCustody)
+    }
+}
+struct EndCustody;
+impl Luggage<EndCustody> {
+    fn congratulate(self) {
+        println!("package handled.")
+    }
+}
+
+fn main() {
+    Luggage::new(131881)
+        .load()
+        .offload()
+        .prepare()
+        .pick_up()
+        .congratulate();
+}

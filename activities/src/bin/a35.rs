@@ -54,4 +54,29 @@ enum Tile {
     Wood,
 }
 
-fn main() {}
+fn main() {
+    let tile1 = Tile::Sand;
+    let tile2 = Tile::Water(Pressure(190));
+    let tile3 = Tile::Treasure(TreasureChest {
+        content: TreasureItem::Gold,
+        amount: 200,
+    });
+    let tile4 = Tile::Brick(BrickStyle::Red);
+    let tiles = vec![tile1, tile2, tile3, tile4];
+    for tile in tiles {
+        match tile {
+            Tile::Brick(color @ BrickStyle::Gray | color @ BrickStyle::Red) => {
+                println!("the brick color is {:?}", color)
+            }
+            Tile::Brick(other) => println!("{:?}", other),
+            Tile::Water(pressure) if pressure.0 >= 10 => println!("high water pressure!"),
+            Tile::Water(pressure) => println!("water pressure level {}", pressure.0),
+            Tile::Grass | Tile::Dirt | Tile::Sand => println!("ground tile"),
+            Tile::Treasure(TreasureChest {
+                content: TreasureItem::Gold,
+                amount,
+            }) if amount >= 100 => println!("lots of gold"),
+            _ => (),
+        }
+    }
+}
