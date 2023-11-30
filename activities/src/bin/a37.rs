@@ -22,8 +22,41 @@
 // * Utilize the `thiserror` crate for your error type
 // * Run `cargo test --bin a37` to test your implementation
 
+use std::convert::TryFrom;
+
+use thiserror::Error;
+
 #[derive(Debug, Eq, PartialEq)]
 struct Rgb(u8, u8, u8);
+
+#[derive(Debug, Error)]
+enum ConversionError {
+    #[error("The value is not a proper hex color string.")]
+    NotAHex,
+    #[error("The value does not have exactly 3 values.")]
+    Not3Values,
+}
+
+impl TryFrom<&str> for Rgb {
+    type Error = ConversionError;
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        if !value.starts_with('#') || value.len() != 7 {
+            return Err(ConversionError::NotAHex);
+        }
+        let values = value[1..]
+            .as_bytes()
+            .chunks(2)
+            .map(|pair| {
+                let pair_str = std::str::from_utf8(pair).map_err(|_| ConversionError::NotAHex)?;
+                u8::from_str_radix(pair_str, 16).map_err(|_| ConversionError::NotAHex)
+            })
+            .collect::<Result<Vec<u8>, ConversionError>>()?;
+        if values.len() != 3 {
+            return Err(ConversionError::Not3Values);
+        }
+        Ok(Rgb(values[0], values[1], values[2]))
+    }
+}
 
 fn main() {
     // Use `cargo test --bin a37` to test your implementation
@@ -38,46 +71,38 @@ mod test {
     fn converts_valid_hex_color() {
         let expected = Rgb(0, 204, 102);
         let actual = Rgb::try_from("#00cc66");
-        assert_eq!(
-            actual.is_ok(),
-            true,
-            "valid hex code should be converted to Rgb"
-        );
+        assert!(actual.is_ok(), "valid hex code should be converted to Rgb");
         assert_eq!(actual.unwrap(), expected, "wrong Rgb value");
     }
 
     #[test]
     fn fails_on_invalid_hex_digits() {
-        assert_eq!(
+        assert!(
             Rgb::try_from("#0011yy").is_err(),
-            true,
             "should be an error with invalid hex color"
         );
     }
 
     #[test]
     fn fails_when_missing_hash() {
-        assert_eq!(
+        assert!(
             Rgb::try_from("001100").is_err(),
-            true,
             "should be an error when missing hash symbol"
         );
     }
 
     #[test]
     fn fails_when_missing_color_components() {
-        assert_eq!(
+        assert!(
             Rgb::try_from("#0011f").is_err(),
-            true,
             "should be an error when missing one or more color components"
         );
     }
 
     #[test]
     fn fails_with_too_many_color_components() {
-        assert_eq!(
+        assert!(
             Rgb::try_from("#0011ffa").is_err(),
-            true,
             "should be an error when too many color components are provided"
         );
     }
