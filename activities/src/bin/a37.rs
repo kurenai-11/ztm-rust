@@ -44,12 +44,11 @@ impl TryFrom<&str> for Rgb {
             return Err(ConversionError::NotAHex);
         }
         let values = value[1..]
-            .as_bytes()
+            .chars()
+            .collect::<Vec<char>>()
             .chunks(2)
-            .map(|pair| {
-                let pair_str = std::str::from_utf8(pair).map_err(|_| ConversionError::NotAHex)?;
-                u8::from_str_radix(pair_str, 16).map_err(|_| ConversionError::NotAHex)
-            })
+            .map(|pair| pair.iter().collect::<String>())
+            .map(|s| u8::from_str_radix(&s, 16).map_err(|_| ConversionError::NotAHex))
             .collect::<Result<Vec<u8>, ConversionError>>()?;
         if values.len() != 3 {
             return Err(ConversionError::Not3Values);
